@@ -2,68 +2,75 @@
 
 const bluebird = require('bluebird');
 const io = require('socket.io-client');
-const SerialPort = require('serialport');
-
 const host = process.env.host || '192.168.1.41:8082';
 const serialPort = process.env.comPort || 'COM3';
 const socket = io.connect(`${host}`, { rejectUnauthorized: false });
 
-let arduinoPort;
 let isOpen = false;
 
-const promiseListPorts = bluebird.promisify(SerialPort.list);
-
-promiseListPorts().then((ports) => {
-    console.log('list of available ports:');
-    ports.forEach(function(port) {
-        console.log(port.comName);
-        console.log(port.pnpId);
-        console.log(port.manufacturer);
-    });
-    console.log('---');
-}).catch((err) => {
-    console.error(err);
-});
-
-configureArduinoChannel();
+const sendCmdToArduino = configureArduinoChannel();
 configureSocket();
 
-function sendCmdToArduino(cmd) {
-    return new Promise((resolveHandler, rejectHandler) => {
-        if (!isOpen) {
-            console.warn('attempt to flush state to unprepared arduino connection');
-            rejectHandler(new Error('attempt to flush state to unprepared arduino connection'));
-            return
-        }
+function configureArduinoChannel() {
 
-        if (!cmd) {
-            console.warn('cmd is not defined to be flushed to the arduino');
-            rejectHandler(new Error('cmd is not defined to be flushed to the arduino'));
-            return
-        }
+    var five = require("johnny-five");
+    var board = new five.Board({ repl: false });
+    var led;
 
-        console.log('send msg: ' , cmd);
-        const message = JSON.stringify(cmd) + "\n";
-        arduinoPort.write(message, function(err) {
-            if (err) {
-                console.log('Error on write: ', err.message);
-                rejectHandler(err);
-            } else {
-                console.log('message written', message);
-                //wait the result
-                resolveHandler();
+    board.on("ready", function() {
+        isOpen = true;
+
+        led = new five.Led(13);
+    });
+
+    function sendCmdToArduino({ cmd, params }) {
+        return new Promise((resolveHandler, rejectHandler) => {
+            if (!isOpen) {
+                console.warn('attempt to flush state to unprepared arduino connection');
+                rejectHandler(new Error('attempt to flush state to unprepared arduino connection'));
+                return
+            }
+
+            if (!cmd) {
+                console.warn('cmd is not defined to be flushed to the arduino');
+                rejectHandler(new Error('cmd is not defined to be flushed to the arduino'));
+                return
+            }
+
+            try {
+                switch (cmd) {
+                    case 'direction':
+                        led.on();
+                        resolveHandler('OK');
+                        break;
+
+                    default:
+                        throw new Error(`Unknown cmd '${cmd}'`, 'UnknownCMD');
+                }
+            } catch (error) {
+                led.off();
+                rejectHandler(error);
             }
 
         });
-    });
+    }
+
+    return sendCmdToArduino;
 }
+
 
 function configureSocket() {
 
-    socket.on('message', (msg) => {
+    socket.on('message', bluebird.coroutine( function *(msg) {
         console.log('inMsg', msg);
-        sendCmdToArduino({ cmd: msg.cmd, params: msg.params });
-    });
+        try {
+            const result = yield sendCmdToArduino({ cmd: msg.cmd, params: msg.params });
+            socket.emit('msg:acknowledge', { msg: msg, result: result });
+        } catch (error) {
+            socket.emit('msg:rejected', { msg: msg, error: error })
+        }
+
+    }));
 
     socket.on('error', function (data) {
         console.error('error', data);
@@ -106,22 +113,3 @@ function configureSocket() {
 
 
 
-function configureArduinoChannel() {
-    arduinoPort = new SerialPort(serialPort, {
-        parser: SerialPort.parsers.readline('\n'),
-        baudRate: 9600 // this is synced to what was set for the Arduino Code
-    });
-
-    arduinoPort.on('open', function() {
-        console.log('port is open');
-        isOpen = true;
-    });
-
-    arduinoPort.on('error', function(err) {
-        console.log('Error: ', err.message);
-    });
-
-    arduinoPort.on('data', function (data) {
-        console.log('Data: ' + data);
-    });
-}
