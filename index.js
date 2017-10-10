@@ -2,8 +2,7 @@
 
 const bluebird = require('bluebird');
 const io = require('socket.io-client');
-const host = process.env.host || '192.168.1.41:8082';
-const serialPort = process.env.comPort || 'COM3';
+const host = process.env.host || 'http://localhost:80';
 const socket = io.connect(`${host}`, { rejectUnauthorized: false });
 const { configureArduinoChannel } = require('./arduino-bridge');
 
