@@ -5,58 +5,12 @@ const io = require('socket.io-client');
 const host = process.env.host || '192.168.1.41:8082';
 const serialPort = process.env.comPort || 'COM3';
 const socket = io.connect(`${host}`, { rejectUnauthorized: false });
+const { configureArduinoChannel } = require('./arduino-bridge');
 
-let isOpen = false;
 
 const sendCmdToArduino = configureArduinoChannel();
 configureSocket();
 
-function configureArduinoChannel() {
-
-    var five = require("johnny-five");
-    var board = new five.Board({ repl: false });
-    var led;
-
-    board.on("ready", function() {
-        isOpen = true;
-
-        led = new five.Led(13);
-    });
-
-    function sendCmdToArduino({ cmd, params }) {
-        return new Promise((resolveHandler, rejectHandler) => {
-            if (!isOpen) {
-                console.warn('attempt to flush state to unprepared arduino connection');
-                rejectHandler(new Error('attempt to flush state to unprepared arduino connection'));
-                return
-            }
-
-            if (!cmd) {
-                console.warn('cmd is not defined to be flushed to the arduino');
-                rejectHandler(new Error('cmd is not defined to be flushed to the arduino'));
-                return
-            }
-
-            try {
-                switch (cmd) {
-                    case 'direction':
-                        led.on();
-                        resolveHandler('OK');
-                        break;
-
-                    default:
-                        throw new Error(`Unknown cmd '${cmd}'`, 'UnknownCMD');
-                }
-            } catch (error) {
-                led.off();
-                rejectHandler(error);
-            }
-
-        });
-    }
-
-    return sendCmdToArduino;
-}
 
 
 function configureSocket() {
