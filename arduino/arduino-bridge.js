@@ -2,8 +2,7 @@ let isOpen = false;
 const five = require("johnny-five");
 let board;
 let statusLed;
-let rightMotor;
-let leftMotor;
+let context;
 
 const DEFAULT_CMD_RESULT = 'OK';
 const PIN_LEFT_DIR = 7;
@@ -22,19 +21,21 @@ function configureArduinoChannel() {
         isOpen = true;
         statusLed = new five.Led(13);
 
-        leftMotor = new five.Motor({
+        const leftMotor = new five.Motor({
             pins: {
               pwm: PIN_LEFT_SPEED,
               dir: PIN_LEFT_DIR
             }
         });
           
-        rightMotor = new five.Motor({
+        const rightMotor = new five.Motor({
             pins: {
               pwm: PIN_RIGHT_SPEED,
               dir: PIN_RIGHT_DIR
             }
-        });          
+        });
+        
+        context = { hardware:{ leftMotor, rightMotor } };
     });
 
 
@@ -52,7 +53,7 @@ function configureArduinoChannel() {
                 return
             }
 
-            context = { hardware:{ leftMotor, rightMotor } };
+            
 
             try {
                 statusLed.off();
@@ -60,7 +61,9 @@ function configureArduinoChannel() {
                     case 'direction':
                             onDirectionCmd(context, params);
                         break;
-
+                    case 'camera':
+                            require('./cmd/camera')(context, params);
+                        break;
                     default:
                         throw new Error(`Unknown cmd '${cmd}'`, 'UnknownCMD');
                 }

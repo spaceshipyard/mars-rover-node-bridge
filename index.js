@@ -20,6 +20,7 @@ function configureSocket() {
             const result = yield sendCmdToArduino({ cmd: msg.cmd, params: msg.params });
             socket.emit('msg:acknowledge', { msg: msg, result: result });
         } catch (error) {
+            console.error(error);
             socket.emit('msg:rejected', { msg: msg, error: error })
         }
 
