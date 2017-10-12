@@ -4,7 +4,7 @@ const bluebird = require('bluebird');
 const io = require('socket.io-client');
 const host = process.env.host || 'http://localhost:80';
 const socket = io.connect(`${host}`, { rejectUnauthorized: false });
-const { configureArduinoChannel } = require('./arduino-bridge');
+const { configureArduinoChannel } = require('./arduino/arduino-bridge');
 
 
 const sendCmdToArduino = configureArduinoChannel();
