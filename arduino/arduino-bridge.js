@@ -11,6 +11,9 @@ const PIN_LEFT_SPEED = 6;
 const PIN_RIGHT_DIR = 4;
 const PIN_RIGHT_SPEED = 5;
 
+const PIN_CAMERA_SERVO_1 = 9;
+const PIN_CAMERA_SERVO_2 = 10;
+
 const { onDirectionCmd } = require('./cmd/direction');
 
 
@@ -34,8 +37,10 @@ function configureArduinoChannel() {
               dir: PIN_RIGHT_DIR
             }
         });
+
+        const cameraServos = new five.Servos([PIN_CAMERA_SERVO_1, PIN_CAMERA_SERVO_2]);
         
-        context = { hardware:{ leftMotor, rightMotor } };
+        context = { hardware:{ leftMotor, rightMotor, cameraServos } };
     });
 
 
