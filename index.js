@@ -7,14 +7,17 @@ const socket = io.connect(`${host}`, { rejectUnauthorized: false });
 const { configureArduinoChannel } = require('./arduino/arduino-bridge');
 
 
-const sendCmdToArduino = configureArduinoChannel();
+const arduinoControlModules = [
+    require('./arduino/control-modules/direction'),
+    require('./arduino/control-modules/camera')];
+const sendCmdToArduino = configureArduinoChannel(arduinoControlModules);
 configureSocket();
 
 
 
 function configureSocket() {
 
-    socket.on('message', bluebird.coroutine( function *(msg) {
+    socket.on('message', bluebird.coroutine(function* (msg) {
         console.log('inMsg', msg);
         try {
             const result = yield sendCmdToArduino({ cmd: msg.cmd, params: msg.params });
@@ -30,35 +33,35 @@ function configureSocket() {
         console.error('error', data);
     });
 
-    socket.on('connect', function(){
+    socket.on('connect', function () {
         console.log('connect');
     });
 
-    socket.on('event', function(data){
+    socket.on('event', function (data) {
         console.log('event: ' + data);
     });
 
-    socket.on('disconnect', function(){
+    socket.on('disconnect', function () {
         console.log('disconnect');
     });
 
-    socket.on('reconnecting', function(){
+    socket.on('reconnecting', function () {
         console.log('reconnecting');
     });
 
-    socket.on('reconnect_error', function(error){
+    socket.on('reconnect_error', function (error) {
         console.log('reconnect_error ' + JSON.stringify(error));
     });
 
-    socket.on('reconnect_failed', function(){
+    socket.on('reconnect_failed', function () {
         console.log('reconnect_failed');
     });
 
-    socket.on('welcome', ({currRooms}) => {
+    socket.on('welcome', ({ currRooms }) => {
         console.log("welcome", currRooms);
     });
 
-    socket.on('join', ({roomName}) => {
+    socket.on('join', ({ roomName }) => {
         console.log('join', roomName);
     });
 

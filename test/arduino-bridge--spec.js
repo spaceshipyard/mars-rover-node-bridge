@@ -1,52 +1,54 @@
-var assert = require('assert');
+const assert = require('assert');
+const sinon = require('sinon');
+const five = require('johnny-five');
+const bluebird = require('bluebird');
+const { configureArduinoChannel } = require('../arduino/arduino-bridge');
+const EventEmitter = require('events');
 
-const {calcRightSpeedRatio, calcLeftSpeedRation} = require('../arduino/cmd/direction');
+describe('arduino-bridge', () => {
+    const sandbox = sinon.createSandbox();
+    let mockBoard;
+    let boardEventEmmiter = new EventEmitter();
+    const swithBoardToReadyState = () => {
+        boardEventEmmiter.emit('ready');
+    };
+    const anyCmdHandler = sinon.spy();
+    const anyCmdKey = 'anyKey';
+    const anyControlModules = [{ setup: (_, registerCmd) => registerCmd(anyCmdKey, anyCmdHandler) }];
 
-describe('Arduino', function() {
-  describe('direction', function() {
-    it('should calc left speed for possitive values', function() {
-        //given
-        const x = 0.3;
-
-        //when
-        const ratio = calcLeftSpeedRation(x);
-
-        //then
-        assert.equal(ratio, 1.3);
+    before(() => {
+        mockBoard = {
+            on: (key, listener) => boardEventEmmiter.on(key, listener)
+        };
+        sandbox.stub(five, 'Board').value(function () { return mockBoard; });
     });
 
-    it('should calc left speed for negative values', function() {
-        //given
-        const x = -0.5;
-
-        //when
-        const ratio = calcLeftSpeedRation(x);
-
-        //then
-        assert.equal(ratio, 0.5);
+    after(() => {
+        sandbox.restore();
     });
 
-    it('should calc right speed for possitive values', function() {
-        //given
-        const x = 0.3;
-
+    it('should provide sendcmd handler throught configure function', () => {
         //when
-        const ratio = calcRightSpeedRatio(x);
+        const sendCmd = configureArduinoChannel(anyControlModules)
 
         //then
-        assert.equal(ratio, 0.7);
+        assert.ok(sendCmd);
     });
 
-    it('should calc right speed for negative values', function() {
+    it('should sendcmd if board is on', bluebird.coroutine(function *() {
         //given
-        const x = -0.5;
+        const cmdHandler = sinon.spy();
+        const cmdParams = 'expected params'
+        const cmdKey = 'fakeCmdKey';
+        const cmdSetup = (board, registerCmd) => registerCmd(cmdKey, cmdHandler);
+        const sendCmd = configureArduinoChannel([{ setup:cmdSetup }]);
+        swithBoardToReadyState();
 
         //when
-        const ratio = calcRightSpeedRatio(x);
+        yield sendCmd({cmd:cmdKey, params:cmdParams});
 
         //then
-        assert.equal(ratio, 1.5);
-    });
-  });
-});
-
+        assert.ok(cmdHandler.calledOnce);
+        assert.deepEqual(cmdHandler.calledWithExactly(cmdParams));
+    }));
+})

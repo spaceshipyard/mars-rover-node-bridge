@@ -1,82 +1,52 @@
-let isOpen = false;
 const five = require("johnny-five");
-let board;
-let statusLed;
-let context;
+const _ = require('lodash');
 
 const DEFAULT_CMD_RESULT = 'OK';
-const PIN_LEFT_DIR = 7;
-const PIN_LEFT_SPEED = 6;
-
-const PIN_RIGHT_DIR = 4;
-const PIN_RIGHT_SPEED = 5;
-
-const PIN_CAMERA_SERVO_1 = 9;
-const PIN_CAMERA_SERVO_2 = 10;
-
-const { onDirectionCmd } = require('./cmd/direction');
 
 
-function configureArduinoChannel() {
+const cmdMap = new Map();
+const registerCmd = (key, handler) => {
+    if (cmdMap.has(key)) {
+        throw new Error(`${key} already registered.`);
+    }
+    cmdMap.set(key, handler);
+}
 
-    board = new five.Board({ repl: false });
-    board.on("ready", function() {
+function configureArduinoChannel(controlModules) {
+    let isOpen = false;
+    
+    if (_.isEmpty(controlModules)) {
+        throw new Error('At least one control module should be defined for arduino command handling', 'NoControlModules')
+    }
+    let board = new five.Board({ repl: false });
+    board.on("ready", function () {
         isOpen = true;
-        statusLed = new five.Led(13);
 
-        const leftMotor = new five.Motor({
-            pins: {
-              pwm: PIN_LEFT_SPEED,
-              dir: PIN_LEFT_DIR
-            }
-        });
-          
-        const rightMotor = new five.Motor({
-            pins: {
-              pwm: PIN_RIGHT_SPEED,
-              dir: PIN_RIGHT_DIR
-            }
-        });
-
-        const cameraServos = new five.Servos([PIN_CAMERA_SERVO_1, PIN_CAMERA_SERVO_2]);
-        
-        context = { hardware:{ leftMotor, rightMotor, cameraServos } };
+        cmdMap.clear();
+        controlModules.map(m => m.setup({ five, board }, registerCmd));
     });
-
 
     function sendCmdToArduino({ cmd, params }) {
         return new Promise((resolveHandler, rejectHandler) => {
-            if (!isOpen) {
-                console.warn('attempt to flush state to unprepared arduino connection');
-                rejectHandler(new Error('attempt to flush state to unprepared arduino connection'));
-                return
-            }
-
-            if (!cmd) {
-                console.warn('cmd is not defined to be flushed to the arduino');
-                rejectHandler(new Error('cmd is not defined to be flushed to the arduino'));
-                return
-            }
-
-            
-
             try {
-                statusLed.off();
-                switch (cmd) {
-                    case 'direction':
-                            onDirectionCmd(context, params);
-                        break;
-                    case 'camera':
-                            require('./cmd/camera')(context, params);
-                        break;
-                    default:
-                        throw new Error(`Unknown cmd '${cmd}'`, 'UnknownCMD');
+                if (!isOpen) {
+                    console.warn('attempt to flush state to unprepared arduino connection');
+                    throw (new Error('attempt to flush state to unprepared arduino connection'));
                 }
 
-                resolveHandler(DEFAULT_CMD_RESULT);
+                if (!cmd) {
+                    console.error('cmd is not defined to be flushed to the arduino');
+                    throw (new Error('cmd is not defined to be flushed to the arduino'));
+                }
 
+                if (!cmdMap.has(cmd)) {
+                    throw new Error(`Unknown cmd '${cmd}'`, 'UnknownCMD');
+                }
+                const handler = cmdMap.get(cmd);
+                const cmdResult = handler(params);
+
+                resolveHandler(cmdResult || DEFAULT_CMD_RESULT); // fixme questionable solution 
             } catch (error) {
-                statusLed.on();
                 rejectHandler(error);
             }
 
