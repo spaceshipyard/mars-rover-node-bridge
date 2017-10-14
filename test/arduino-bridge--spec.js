@@ -40,7 +40,7 @@ describe('arduino-bridge', () => {
         const cmdHandler = sinon.spy();
         const cmdParams = 'expected params'
         const cmdKey = 'fakeCmdKey';
-        const cmdSetup = (board, registerCmd) => registerCmd(cmdKey, cmdHandler);
+        const cmdSetup = (_, registerCmd) => registerCmd(cmdKey, cmdHandler);
         const sendCmd = configureArduinoChannel([{ setup:cmdSetup }]);
         swithBoardToReadyState();
 
