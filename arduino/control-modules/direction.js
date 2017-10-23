@@ -25,9 +25,10 @@ function setup({ five }, registerCmd) {
         }
     });
 
-    function onDirectionCmd({ offset, magnitude }) {
+    function onDirectionCmd({ offset }) {
         console.log('offset', offset);
 
+        const magnitude = Math.sqrt(offset.x * offset.x + offset.y * offset.y);
         const leftSpeedRatio = calcLeftSpeedRation(offset.x);
         const rightSpeedRatio = calcRightSpeedRatio(offset.x);
         const leftSpeed = Math.floor(255 * magnitude * leftSpeedRatio);
