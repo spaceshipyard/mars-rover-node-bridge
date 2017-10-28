@@ -2,8 +2,9 @@
 
 const bluebird = require('bluebird');
 const io = require('socket.io-client');
-const host = process.env.host || 'http://localhost:80';
+const host = process.env.host || 'http://localhost:8080';
 const serialPort = process.env.serialPort || undefined;
+const targetRoom = process.env.room || undefined;
 const socket = io.connect(`${host}`, { rejectUnauthorized: false });
 const { configureArduinoChannel } = require('./arduino/arduino-bridge');
 
@@ -60,10 +61,15 @@ function configureSocket() {
 
     socket.on('welcome', ({ currRooms }) => {
         console.log("welcome", currRooms);
+        socket.emit('join', {roomName: targetRoom});
     });
 
     socket.on('join', ({ roomName }) => {
         console.log('join', roomName);
+    });
+
+    socket.on('memberJoined', ({clientId}) => {
+       console.log('memberJoined', clientId);
     });
 
 
