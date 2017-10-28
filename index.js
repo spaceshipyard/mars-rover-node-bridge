@@ -3,6 +3,7 @@
 const bluebird = require('bluebird');
 const io = require('socket.io-client');
 const host = process.env.host || 'http://localhost:80';
+const serialPort = process.env.serialPort || undefined;
 const socket = io.connect(`${host}`, { rejectUnauthorized: false });
 const { configureArduinoChannel } = require('./arduino/arduino-bridge');
 
@@ -10,7 +11,7 @@ const { configureArduinoChannel } = require('./arduino/arduino-bridge');
 const arduinoControlModules = [
     require('./arduino/control-modules/direction'),
     require('./arduino/control-modules/camera')];
-const sendCmdToArduino = configureArduinoChannel(arduinoControlModules);
+const sendCmdToArduino = configureArduinoChannel(arduinoControlModules, serialPort);
 configureSocket();
 
 
