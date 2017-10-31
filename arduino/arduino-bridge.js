@@ -12,6 +12,7 @@ const registerCmd = (key, handler) => {
     cmdMap.set(key, handler);
 }
 
+
 function configureArduinoChannel(controlModules, serialPort = undefined) {
     let isOpen = false;
     
@@ -24,9 +25,14 @@ function configureArduinoChannel(controlModules, serialPort = undefined) {
 
         cmdMap.clear();
         controlModules.map(m => m.setup({ five, board }, registerCmd));
+
+
+
+
     });
 
     function sendCmdToArduino({ cmd, params }) {
+        console.log({ cmd, params });
         return new Promise((resolveHandler, rejectHandler) => {
             try {
                 if (!isOpen) {
