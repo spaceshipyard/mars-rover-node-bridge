@@ -12,21 +12,27 @@ const registerCmd = (key, handler) => {
     cmdMap.set(key, handler);
 }
 
-function configureArduinoChannel(controlModules) {
+
+function configureArduinoChannel(controlModules, serialPort = undefined) {
     let isOpen = false;
     
     if (_.isEmpty(controlModules)) {
         throw new Error('At least one control module should be defined for arduino command handling', 'NoControlModules')
     }
-    let board = new five.Board({ repl: false });
+    let board = new five.Board({ repl: false, port:serialPort });
     board.on("ready", function () {
         isOpen = true;
 
         cmdMap.clear();
         controlModules.map(m => m.setup({ five, board }, registerCmd));
+
+
+
+
     });
 
     function sendCmdToArduino({ cmd, params }) {
+        console.log({ cmd, params });
         return new Promise((resolveHandler, rejectHandler) => {
             try {
                 if (!isOpen) {

@@ -6,6 +6,7 @@ module.exports = {
     PIN_LEFT_SPEED: 6,
     
     PIN_RIGHT_DIR: 4,
-    PIN_RIGHT_SPEED: 5
-    
+    PIN_RIGHT_SPEED: 5,
+
+    PIN_STEPPER1: [12, 11, 10, 9]
 };
