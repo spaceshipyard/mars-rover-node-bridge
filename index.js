@@ -12,7 +12,7 @@ console.log({host});
 
 const arduinoControlModules = [
     require('./arduino/control-modules/direction'),
-    require('./arduino/control-modules/stepper-platform'),
+    //require('./arduino/control-modules/stepper-platform'),
     require('./arduino/control-modules/camera')];
 const sendCmdToArduino = configureArduinoChannel(arduinoControlModules, serialPort);
 configureSocket();
