@@ -1,12 +1,12 @@
 const { PIN_LEFT_DIR, PIN_LEFT_SPEED, PIN_RIGHT_DIR, PIN_RIGHT_SPEED } = require('../cmd-pins');
 
 
-function calcLeftSpeedRation(x) {
-    return x > 0 ? 1 + x : x + 1;
+function calcLeftSpeedRation(direction, speed) {
+    return direction > 0 ? 1 + direction : direction + 1;
 }
 
-function calcRightSpeedRatio(x) {
-    return x < 0 ? 1 + -x : 1 - x;
+function calcRightSpeedRatio(direction, speed) {
+    return direction < 0 ? 1 + -direction : 1 - direction;
 }
 
 function setup({ five }, registerCmd) {
@@ -29,20 +29,23 @@ function setup({ five }, registerCmd) {
         console.log('offset', offset);
 
         const magnitude = Math.sqrt(offset.x * offset.x + offset.y * offset.y);
-        const leftSpeedRatio = calcLeftSpeedRation(offset.x);
-        const rightSpeedRatio = calcRightSpeedRatio(offset.x);
-        const leftSpeed = Math.floor(255 * magnitude * leftSpeedRatio);
-        const rightSpeed = Math.floor(255 * magnitude * rightSpeedRatio);
+        const leftSpeedRatio = offset.x/2;//calcLeftSpeedRation(offset.x, offset.y);
+        const rightSpeedRatio = offset.y/2;//calcRightSpeedRatio(offset.x, offset.y);
+        const leftSpeed = Math.floor(255 * leftSpeedRatio);
+        const rightSpeed = Math.floor(255 * rightSpeedRatio);
 
         console.log(leftSpeed, rightSpeed);
 
-        if (offset.y > 0) {
+        if (leftSpeed > 0) {
             leftMotor.forward(leftSpeed);
+        } else {
+            leftMotor.reverse(Math.abs(leftSpeed));
+        }
+
+        if (rightSpeed > 0) {
             rightMotor.forward(rightSpeed);
         } else {
-
-            leftMotor.reverse(leftSpeed);
-            rightMotor.reverse(rightSpeed);
+            rightMotor.reverse(Math.abs(rightSpeed));
         }
     }
 
