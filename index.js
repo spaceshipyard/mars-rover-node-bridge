@@ -15,7 +15,7 @@ const handleIncomingMap = {};
 function handleIncoming(cmd, result = '') {
     if(handleIncomingMap[cmd] != result){
       handleIncomingMap[cmd] = result;
-      socket.emit('message', { cmd, result });
+      socket.emit('message', { msg: cmd, cmd, result });
     }
 }
 
