@@ -13,9 +13,9 @@ const registerCmd = (key, handler) => {
 }
 
 
-function configureArduinoChannel(controlModules, serialPort = undefined) {
+function configureArduinoChannel(controlModules, serialPort = undefined, handleIncoming) {
     let isOpen = false;
-    
+
     if (_.isEmpty(controlModules)) {
         throw new Error('At least one control module should be defined for arduino command handling', 'NoControlModules')
     }
@@ -23,34 +23,32 @@ function configureArduinoChannel(controlModules, serialPort = undefined) {
     board.on("ready", function () {
         isOpen = true;
         cmdMap.clear();
-        controlModules.map(m => m.setup({ five, board }, registerCmd));
+        controlModules.map(m => m.setup({ five, board }, registerCmd, handleIncoming));
     });
 
     function sendCmdToArduino({ cmd, params }) {
-        console.log({ cmd, params });
         return new Promise((resolveHandler, rejectHandler) => {
             try {
-                if (!isOpen) {
+                  if (!isOpen) {
                     console.warn('attempt to flush state to unprepared arduino connection');
                     throw (new Error('attempt to flush state to unprepared arduino connection'));
-                }
+                  }
 
-                if (!cmd) {
+                  if (!cmd) {
                     console.error('cmd is not defined to be flushed to the arduino');
                     throw (new Error('cmd is not defined to be flushed to the arduino'));
-                }
+                  }
 
-                if (!cmdMap.has(cmd)) {
+                  if (!cmdMap.has(cmd)) {
                     throw new Error(`Unknown cmd '${cmd}'`, 'UnknownCMD');
-                }
-                const handler = cmdMap.get(cmd);
-                const cmdResult = handler(params);
+                  }
+                  const handler = cmdMap.get(cmd);
+                  const cmdResult = handler(params);
 
-                resolveHandler(cmdResult || DEFAULT_CMD_RESULT); // fixme questionable solution 
+                  resolveHandler(cmdResult || DEFAULT_CMD_RESULT); // fixme questionable solution
             } catch (error) {
                 rejectHandler(error);
             }
-
         });
     }
 

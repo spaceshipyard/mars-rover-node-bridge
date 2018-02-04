@@ -11,15 +11,21 @@ const { configureArduinoChannel } = require('./arduino/arduino-bridge');
 
 console.log({host});
 
+const handleIncomingMap = {};
+function handleIncoming(cmd, result = '') {
+    if(handleIncomingMap[cmd] != result){
+      handleIncomingMap[cmd] = result;
+      socket.emit('message', { cmd, result });
+    }
+}
+
 const arduinoControlModules = [
     require('./arduino/control-modules/direction'),
     //require('./arduino/control-modules/stepper-platform'),
     require('./arduino/control-modules/camera'),
     require('./arduino/control-modules/proximity')];
-const sendCmdToArduino = configureArduinoChannel(arduinoControlModules, serialPort);
+const sendCmdToArduino = configureArduinoChannel(arduinoControlModules, serialPort, handleIncoming);
 configureSocket();
-
-
 
 function configureSocket() {
 
