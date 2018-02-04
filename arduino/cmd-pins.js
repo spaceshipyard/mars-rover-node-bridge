@@ -1,6 +1,7 @@
 module.exports = {
     PIN_CAMERA_SERVO_1: 9,
     PIN_CAMERA_SERVO_2: 10,
+    PIN_PROXIMITY_1: 3,
 
     PIN_LEFT_DIR: 7,
     PIN_LEFT_SPEED: 6,

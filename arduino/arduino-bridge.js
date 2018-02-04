@@ -22,13 +22,8 @@ function configureArduinoChannel(controlModules, serialPort = undefined) {
     let board = new five.Board({ repl: false, port:serialPort });
     board.on("ready", function () {
         isOpen = true;
-
         cmdMap.clear();
         controlModules.map(m => m.setup({ five, board }, registerCmd));
-
-
-
-
     });
 
     function sendCmdToArduino({ cmd, params }) {
