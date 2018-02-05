@@ -13,7 +13,7 @@ const registerCmd = (key, handler) => {
 }
 
 
-function configureArduinoChannel(controlModules, serialPort = undefined, handleIncoming) {
+function configureArduinoChannel(controlModules, serialPort = undefined, dispatch) {
     let isOpen = false;
 
     if (_.isEmpty(controlModules)) {
@@ -23,7 +23,7 @@ function configureArduinoChannel(controlModules, serialPort = undefined, handleI
     board.on("ready", function () {
         isOpen = true;
         cmdMap.clear();
-        controlModules.map(m => m.setup({ five, board }, registerCmd, handleIncoming));
+        controlModules.map(m => m.setup({ five, board }, registerCmd, dispatch));
     });
 
     function sendCmdToArduino({ cmd, params }) {

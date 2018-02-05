@@ -1,6 +1,6 @@
 const {PIN_PROXIMITY_1} = require('../cmd-pins');
 
-function setup({five}, registerCmd, handleIncoming) {
+function setup({five}, registerCmd, dispatch) {
 
   const Proximity = five.Proximity;
   const proximity = new Proximity({
@@ -12,7 +12,7 @@ function setup({five}, registerCmd, handleIncoming) {
   registerCmd(keys.INFO_PROXIMITY, () => {});
 
   proximity.on("data", function() {
-    handleIncoming(keys.INFO_PROXIMITY, this.cm);
+    dispatch(keys.INFO_PROXIMITY, this.cm);
   });
 }
 
