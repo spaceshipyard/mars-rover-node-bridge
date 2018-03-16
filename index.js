@@ -29,3 +29,4 @@ const eventBus = require('./events/event-bus');
 const { EVENT_DISPATCHER_CMD } = require('./events/event-keys');
 
 eventBus.on(EVENT_DISPATCHER_CMD, sendCmdToArduino);
+eventBus.on(EVENT_SENSOR_DATA, (cmd, result) => dispatch(cmd, result));
