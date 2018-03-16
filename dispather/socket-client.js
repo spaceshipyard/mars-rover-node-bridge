@@ -1,10 +1,13 @@
-export function configureSocket(sendCmdToArduino) {
+const { EVENT_DISPATCHER_CMD } = require('../events/event-keys');
+const EventBus = require('../events/event-bus');
+
+export function configureSocket() {
 
     socket.on('message', bluebird.coroutine(function* (msg) {
         console.log('inMsg', msg);
         try {
-            const result = yield sendCmdToArduino({ cmd: msg.cmd, params: msg.params });
-            socket.emit('msg:acknowledge', { msg: msg, result: result });
+            EventBus.emit(DISEVENT_DISPATCHER_CMD, { cmdKey: msg.cmd, msg });
+            socket.emit('msg:acknowledge', { msg: msg });
         } catch (error) {
             console.error(error);
             socket.emit('msg:rejected', { msg: msg, error: error })
@@ -42,7 +45,7 @@ export function configureSocket(sendCmdToArduino) {
 
     socket.on('welcome', ({ currRooms }) => {
         console.log("welcome", currRooms);
-        socket.emit('join', {roomName: targetRoom});
+        socket.emit('join', { roomName: targetRoom });
     });
 
     socket.on('join', ({ roomName }) => {
@@ -50,8 +53,8 @@ export function configureSocket(sendCmdToArduino) {
         console.log('join', roomName);
     });
 
-    socket.on('memberJoined', ({clientId}) => {
-       console.log('memberJoined', clientId);
+    socket.on('memberJoined', ({ clientId }) => {
+        console.log('memberJoined', clientId);
     });
 
 
