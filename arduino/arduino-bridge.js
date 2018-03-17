@@ -47,6 +47,8 @@ function configureArduinoChannel(controlModules, serialPort = undefined) {
             throw (error);
         }
     };
+
+    return sendCmdToArduino;
 }
 
 module.exports = { configureArduinoChannel };

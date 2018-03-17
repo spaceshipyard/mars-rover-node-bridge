@@ -15,13 +15,13 @@ const arduinoControlModules = [
     //require('./arduino/control-modules/stepper-platform'),
     require('./arduino/control-modules/camera'),
     require('./arduino/control-modules/proximity')];
-const sendCmdToArduino = configureArduinoChannel(arduinoControlModules, serialPort, dispatch);
+const sendCmdToArduino = configureArduinoChannel(arduinoControlModules, serialPort);
 
 const configureSocket = require('./dispather/socket-client');
 const sendMessage = configureSocket({ host, port, targetRoom });
 
 const eventBus = require('./events/event-bus');
-const { EVENT_DISPATCHER_CMD } = require('./events/event-keys');
+const { EVENT_DISPATCHER_CMD, EVENT_SENSOR_DATA } = require('./events/event-keys');
 
 eventBus.on(EVENT_DISPATCHER_CMD, sendCmdToArduino);
 eventBus.on(EVENT_SENSOR_DATA, (event) => sendMessage(EVENT_SENSOR_DATA, event));

@@ -1,8 +1,9 @@
 const { EVENT_DISPATCHER_CMD } = require('../events/event-keys');
 const EventBus = require('../events/event-bus');
 const io = require('socket.io-client');
+const bluebird = require('bluebird');
 
-export function configureSocket({ host, port, targetRoom }) {
+function configureSocket({ host, port, targetRoom }) {
 
     const socket = io.connect(`http://${host}:${port}`, { rejectUnauthorized: false });
 
@@ -64,3 +65,5 @@ export function configureSocket({ host, port, targetRoom }) {
         socket.emit('message', { cmd: cmd, params });
     };
 }
+
+module.exports = configureSocket;

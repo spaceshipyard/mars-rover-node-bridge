@@ -1,7 +1,5 @@
-import { INFO_PROXIMITY, SENSOR_DATA_PROXIMITY } from '../sensor-keys';
-
+const { INFO_PROXIMITY, SENSOR_DATA_PROXIMITY } = require('../sensor-keys');
 const { EVENT_SENSOR_DATA } = require('../../events/event-keys');
-
 const { PIN_PROXIMITY_1, PIN_PROXIMITY_2 } = require('../cmd-pins');
 const { emit } = require('../../events/event-bus');
 
