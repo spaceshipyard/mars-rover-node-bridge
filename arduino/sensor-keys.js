@@ -1,0 +1,1 @@
+export const SENSOR_DATA_PROXIMITY = 'proximity-data';
