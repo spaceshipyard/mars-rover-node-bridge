@@ -42,15 +42,11 @@ function configureArduinoChannel(controlModules, serialPort = undefined) {
                 throw new Error(`Unknown cmd '${cmd}'`, 'UnknownCMD');
             }
             const handler = cmdMap.get(cmd);
-            const cmdResult = handler(params);
-
-            return (cmdResult || DEFAULT_CMD_RESULT); // fixme questionable solution
+            handler(params);
         } catch (error) {
             throw (error);
         }
     };
-
-    return sendCmdToArduino;
 }
 
 module.exports = { configureArduinoChannel };
