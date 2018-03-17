@@ -8,7 +8,7 @@ const { emit } = require('../../events/event-bus');
 let intervalId;
 const INTERVAL_DURATION = 300;
 
-function setup({ five }, registerCmd, dispatch) {
+function setup({ five }, registerCmd) {
 
   intervalId && clearInterval(intervalId);
 
