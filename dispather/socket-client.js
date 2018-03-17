@@ -10,7 +10,7 @@ function configureSocket({ host, port, targetRoom }) {
     socket.on('message', bluebird.coroutine(function* (msg) {
         console.log('inMsg', msg);
         try {
-            EventBus.emit(DISEVENT_DISPATCHER_CMD, { cmdKey: msg.cmd, msg });
+            EventBus.emit(EVENT_DISPATCHER_CMD, { cmdKey: msg.cmd, msg });
             socket.emit('msg:acknowledge', { msg: msg });
         } catch (error) {
             console.error(error);
