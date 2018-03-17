@@ -23,13 +23,16 @@ function configureArduinoChannel(controlModules, serialPort = undefined) {
     let board = new five.Board({ repl: false, port: serialPort });
     board.on("ready", function () {
         isOpen = true;
+        console.log('arduino connected');
         cmdEventEmitter.removeAllListeners();
         //note dispose could be undefined because most of modules does not have allocated resources in the reality
         moduleDisposeHandlers.forEach(dispose => dispose && dispose());
         moduleDisposeHandlers = controlModules.map(m => m.setup({ five, board }, registerCmd));
     });
 
-    function sendCmdToArduino({ cmd, params }) {
+    function sendCmdToArduino(event) {
+        console.log(`arduino cmd ${JSON.stringify(event)}`);
+        const { cmd, params } = event;
         try {
             if (!isOpen) {
                 console.warn('attempt to flush state to unprepared arduino connection');
@@ -37,8 +40,8 @@ function configureArduinoChannel(controlModules, serialPort = undefined) {
             }
 
             if (!cmd) {
-                console.error('cmd is not defined to be flushed to the arduino');
-                throw (new Error('cmd is not defined to be flushed to the arduino'));
+                console.error(`"${cmd}" cmd is not defined to be flushed to the arduino`);
+                throw (new Error(`"${cmd}" is not defined to be flushed to the arduino`));
             }
 
             if (!cmdEventEmitter.listenerCount(cmd)) {

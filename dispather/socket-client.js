@@ -1,20 +1,20 @@
-const { EVENT_DISPATCHER_CMD } = require('../events/event-keys');
+const {EVENT_DISPATCHER_CMD} = require('../events/event-keys');
 const EventBus = require('../events/event-bus');
 const io = require('socket.io-client');
 const bluebird = require('bluebird');
 
-function configureSocket({ host, port, targetRoom }) {
+function configureSocket({host, port, targetRoom}) {
 
-    const socket = io.connect(`http://${host}:${port}`, { rejectUnauthorized: false });
+    const socket = io.connect(`http://${host}:${port}`, {rejectUnauthorized: false});
 
     socket.on('message', bluebird.coroutine(function* (msg) {
         console.log('inMsg', msg);
         try {
-            EventBus.emit(EVENT_DISPATCHER_CMD, { cmdKey: msg.cmd, msg });
-            socket.emit('msg:acknowledge', { msg: msg });
+            EventBus.emit(EVENT_DISPATCHER_CMD, {cmd: msg.cmd, params: msg.params });
+            socket.emit('msg:acknowledge', {msg: msg});
         } catch (error) {
             console.error(error);
-            socket.emit('msg:rejected', { msg: msg, error: error })
+            socket.emit('msg:rejected', {msg: msg, error: error})
         }
 
     }));
@@ -47,22 +47,22 @@ function configureSocket({ host, port, targetRoom }) {
         console.log('reconnect_failed');
     });
 
-    socket.on('welcome', ({ currRooms }) => {
+    socket.on('welcome', ({currRooms}) => {
         console.log("welcome", currRooms);
-        socket.emit('join', { roomName: targetRoom });
+        socket.emit('join', {roomName: targetRoom});
     });
 
-    socket.on('join', ({ roomName }) => {
+    socket.on('join', ({roomName}) => {
 
         console.log('join', roomName);
     });
 
-    socket.on('memberJoined', ({ clientId }) => {
+    socket.on('memberJoined', ({clientId}) => {
         console.log('memberJoined', clientId);
     });
 
     return (cmd, params) => {
-        socket.emit('message', { cmd: cmd, params });
+        socket.emit('message', {cmd: cmd, params});
     };
 }
 
