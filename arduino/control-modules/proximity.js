@@ -1,3 +1,5 @@
+import { INFO_PROXIMITY, SENSOR_DATA_PROXIMITY } from '../sensor-keys';
+
 const { EVENT_SENSOR_DATA } = require('../../events/event-keys');
 
 const { PIN_PROXIMITY_1, PIN_PROXIMITY_2 } = require('../cmd-pins');
@@ -40,7 +42,7 @@ function setup({ five }, registerCmd, dispatch) {
 
   intervalId = setInterval(() => {
     const data = sensors.map(({ name, distance }) => ({ name, distance }));
-    emit(EVENT_SENSOR_DATA, data);
+    emit(EVENT_SENSOR_DATA, { type: SENSOR_DATA_PROXIMITY, data });
   }, INTERVAL_DURATION);
 
 }

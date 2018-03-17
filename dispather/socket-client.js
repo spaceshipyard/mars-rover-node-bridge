@@ -1,7 +1,10 @@
 const { EVENT_DISPATCHER_CMD } = require('../events/event-keys');
 const EventBus = require('../events/event-bus');
+const io = require('socket.io-client');
 
-export function configureSocket() {
+export function configureSocket({ host, port, targetRoom }) {
+
+    const socket = io.connect(`http://${host}:${port}`, { rejectUnauthorized: false });
 
     socket.on('message', bluebird.coroutine(function* (msg) {
         console.log('inMsg', msg);
@@ -57,5 +60,7 @@ export function configureSocket() {
         console.log('memberJoined', clientId);
     });
 
-
+    return (cmd, params) => {
+        socket.emit('message', { cmd: cmd, params });
+    };
 }
