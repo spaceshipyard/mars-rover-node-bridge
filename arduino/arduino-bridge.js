@@ -1,63 +1,58 @@
+const EventEmitter = require('events');
 const five = require("johnny-five");
 const _ = require('lodash');
 
 const DEFAULT_CMD_RESULT = 'OK';
 
-
-const cmdMap = new Map();
+let moduleDisposeHandlers = [];
+const cmdEventEmitter = new EventEmitter();
 const registerCmd = (key, handler) => {
-    if (cmdMap.has(key)) {
-        throw new Error(`${key} already registered.`);
+    if (cmdEventEmitter.listenerCount(key) > 0) {
+        console.warn(`${key} already registered.`);
     }
-    cmdMap.set(key, handler);
+    cmdEventEmitter.on(key, handler);
 }
 
 
 function configureArduinoChannel(controlModules, serialPort = undefined) {
     let isOpen = false;
-    
+
     if (_.isEmpty(controlModules)) {
         throw new Error('At least one control module should be defined for arduino command handling', 'NoControlModules')
     }
-    let board = new five.Board({ repl: false, port:serialPort });
+    let board = new five.Board({ repl: false, port: serialPort });
     board.on("ready", function () {
         isOpen = true;
-
-        cmdMap.clear();
-        controlModules.map(m => m.setup({ five, board }, registerCmd));
-
-
-
-
+        console.log('arduino connected');
+        cmdEventEmitter.removeAllListeners();
+        //note dispose could be undefined because most of modules does not have allocated resources in the reality
+        moduleDisposeHandlers.forEach(dispose => dispose && dispose());
+        moduleDisposeHandlers = controlModules.map(m => m.setup({ five, board }, registerCmd));
     });
 
-    function sendCmdToArduino({ cmd, params }) {
-        console.log({ cmd, params });
-        return new Promise((resolveHandler, rejectHandler) => {
-            try {
-                if (!isOpen) {
-                    console.warn('attempt to flush state to unprepared arduino connection');
-                    throw (new Error('attempt to flush state to unprepared arduino connection'));
-                }
-
-                if (!cmd) {
-                    console.error('cmd is not defined to be flushed to the arduino');
-                    throw (new Error('cmd is not defined to be flushed to the arduino'));
-                }
-
-                if (!cmdMap.has(cmd)) {
-                    throw new Error(`Unknown cmd '${cmd}'`, 'UnknownCMD');
-                }
-                const handler = cmdMap.get(cmd);
-                const cmdResult = handler(params);
-
-                resolveHandler(cmdResult || DEFAULT_CMD_RESULT); // fixme questionable solution 
-            } catch (error) {
-                rejectHandler(error);
+    function sendCmdToArduino(event) {
+        console.log(`arduino cmd ${JSON.stringify(event)}`);
+        const { cmd, params } = event;
+        try {
+            if (!isOpen) {
+                console.warn('attempt to flush state to unprepared arduino connection');
+                throw (new Error('attempt to flush state to unprepared arduino connection'));
             }
 
-        });
-    }
+            if (!cmd) {
+                console.error(`"${cmd}" cmd is not defined to be flushed to the arduino`);
+                throw (new Error(`"${cmd}" is not defined to be flushed to the arduino`));
+            }
+
+            if (!cmdEventEmitter.listenerCount(cmd)) {
+                throw new Error(`Unknown cmd '${cmd}'`, 'UnknownCMD');
+            }
+            
+            cmdEventEmitter.emit(cmd, params);
+        } catch (error) {
+            throw (error);
+        }
+    };
 
     return sendCmdToArduino;
 }

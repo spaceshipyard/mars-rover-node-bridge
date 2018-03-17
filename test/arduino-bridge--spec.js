@@ -45,10 +45,10 @@ describe('arduino-bridge', () => {
         swithBoardToReadyState();
 
         //when
-        yield sendCmd({cmd:cmdKey, params:cmdParams});
+        sendCmd({cmd:cmdKey, params:cmdParams});
 
         //then
-        assert.ok(cmdHandler.calledOnce);
-        assert.deepEqual(cmdHandler.calledWithExactly(cmdParams));
+        assert(cmdHandler.calledOnce);
+        assert(cmdHandler.withArgs(cmdParams).calledOnce);
     }));
 })
