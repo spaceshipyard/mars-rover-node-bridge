@@ -1,7 +1,7 @@
 const { INFO_PROXIMITY, SENSOR_DATA_PROXIMITY } = require('../sensor-keys');
 const { EVENT_SENSOR_DATA } = require('../../events/event-keys');
 const { PIN_PROXIMITY_1, PIN_PROXIMITY_2 } = require('../cmd-pins');
-const { emit } = require('../../events/event-bus');
+const eventBus = require('../../events/event-bus');
 
 let intervalId;
 const INTERVAL_DURATION = 300;
@@ -37,12 +37,18 @@ function setup({ five }, registerCmd) {
   });
 
 
+  const updateSensorData = () => {
+      const data = sensors.map(({ name, distance }) => ({ name, distance }));
+      eventBus.emit(EVENT_SENSOR_DATA, { type: SENSOR_DATA_PROXIMITY, data });
+  };
 
-  intervalId = setInterval(() => {
-    const data = sensors.map(({ name, distance }) => ({ name, distance }));
-    emit(EVENT_SENSOR_DATA, { type: SENSOR_DATA_PROXIMITY, data });
-  }, INTERVAL_DURATION);
+  intervalId = setInterval(updateSensorData, INTERVAL_DURATION);
 
+  updateSensorData();
+
+  return () => {
+      intervalId && clearInterval(intervalId);
+  }
 }
 
 module.exports = { setup };

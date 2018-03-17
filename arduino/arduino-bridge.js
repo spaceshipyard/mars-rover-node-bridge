@@ -4,6 +4,7 @@ const _ = require('lodash');
 
 const DEFAULT_CMD_RESULT = 'OK';
 
+let moduleDisposeHandlers = [];
 const cmdEventEmitter = new EventEmitter();
 const registerCmd = (key, handler) => {
     if (cmdEventEmitter.listenerCount(key) > 0) {
@@ -23,7 +24,9 @@ function configureArduinoChannel(controlModules, serialPort = undefined) {
     board.on("ready", function () {
         isOpen = true;
         cmdEventEmitter.removeAllListeners();
-        controlModules.map(m => m.setup({ five, board }, registerCmd));
+        //note dispose could be undefined because most of modules does not have allocated resources in the reality
+        moduleDisposeHandlers.forEach(dispose => dispose && dispose());
+        moduleDisposeHandlers = controlModules.map(m => m.setup({ five, board }, registerCmd));
     });
 
     function sendCmdToArduino({ cmd, params }) {
