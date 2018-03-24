@@ -24,7 +24,7 @@
   "scripts": {
     "test": "standard && mocha",
     "test:watch": "standard && mocha -w",
-    "start": "node index.js",
+    "start": "standard && node index.js",
     "start:watch": "nodemon --watch *.js --exec npm run start"
   },
   "author": "",
