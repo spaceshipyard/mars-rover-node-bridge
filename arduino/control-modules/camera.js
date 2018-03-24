@@ -1,22 +1,18 @@
-const { PIN_CAMERA_SERVO_1, PIN_CAMERA_SERVO_2 } = require('../cmd-pins');
-const speed = 500;
+const { PIN_CAMERA_SERVO_1, PIN_CAMERA_SERVO_2 } = require('../cmd-pins')
+const speed = 500
 
-let lastOffset = {x:90, y:90};
+function setup ({ five }, registerCmd) {
+  const cameraServos = new five.Servos([PIN_CAMERA_SERVO_1, PIN_CAMERA_SERVO_2])
 
-function setup({ five }, registerCmd) {
-    const cameraServos = new five.Servos([PIN_CAMERA_SERVO_1, PIN_CAMERA_SERVO_2]);
+  function onCamera ({ offset }) {
+    cameraServos[0].stop()
+    cameraServos[1].stop()
+    cameraServos[0].to(offset.x, speed)
+    cameraServos[1].to(offset.y, speed)
+  }
 
-    function onCamera({ offset }) {
-        cameraServos[0].stop();
-        cameraServos[1].stop();
-        cameraServos[0].to(offset.x, speed);
-        cameraServos[1].to(offset.y, speed);
-
-        lastOffset = offset;
-    }
-
-    const keys = require('../cmd-keys');
-    registerCmd(keys.CMD_KEY_CAMERA, onCamera);
+  const keys = require('../cmd-keys')
+  registerCmd(keys.CMD_KEY_CAMERA, onCamera)
 }
 
-module.exports = { setup };
+module.exports = { setup }
