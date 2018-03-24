@@ -1,30 +1,28 @@
-'use strict';
+'use strict'
 
-const bluebird = require('bluebird');
-const host = process.env.host || '127.0.0.1';
-const port = process.env.port || '8080';
-const serialPort = process.env.serialPort || undefined;
-const targetRoom = process.env.room || 'lobby';
+const host = process.env.host || '127.0.0.1'
+const port = process.env.port || '8080'
+const serialPort = process.env.serialPort || undefined
+const targetRoom = process.env.room || 'lobby'
 
-
-console.log({ host });
+console.log({ host })
 
 // config arduino
 const arduinoControlModules = [
-    require('./arduino/control-modules/direction'),
-    //require('./arduino/control-modules/stepper-platform'),
-    require('./arduino/control-modules/camera'),
-    require('./arduino/control-modules/proximity')];
-const { configureArduinoChannel } = require('./arduino/arduino-bridge');
-const sendCmdToArduino = configureArduinoChannel(arduinoControlModules, serialPort);
+  require('./arduino/control-modules/direction'),
+  // require('./arduino/control-modules/stepper-platform'),
+  require('./arduino/control-modules/camera'),
+  require('./arduino/control-modules/proximity')]
+const { configureArduinoChannel } = require('./arduino/arduino-bridge')
+const sendCmdToArduino = configureArduinoChannel(arduinoControlModules, serialPort)
 
 // config dispatcher
-const configureDispatherSocket = require('./dispather/socket-client');
-const sendMsgToDispatcher = configureDispatherSocket({ host, port, targetRoom });
+const configureDispatherSocket = require('./dispather/socket-client')
+const sendMsgToDispatcher = configureDispatherSocket({ host, port, targetRoom })
 
 // config event-bus
-const eventBus = require('./events/event-bus');
-const { EVENT_DISPATCHER_CMD, EVENT_SENSOR_DATA } = require('./events/event-keys');
+const eventBus = require('./events/event-bus')
+const { EVENT_DISPATCHER_CMD, EVENT_SENSOR_DATA } = require('./events/event-keys')
 
-eventBus.on(EVENT_DISPATCHER_CMD, sendCmdToArduino);
-eventBus.on(EVENT_SENSOR_DATA, (event) => sendMsgToDispatcher(EVENT_SENSOR_DATA, event));
+eventBus.on(EVENT_DISPATCHER_CMD, sendCmdToArduino)
+eventBus.on(EVENT_SENSOR_DATA, (event) => sendMsgToDispatcher(EVENT_SENSOR_DATA, event))

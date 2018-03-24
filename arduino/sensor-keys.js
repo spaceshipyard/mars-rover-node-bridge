@@ -1,1 +1,1 @@
-module.exports = { SENSOR_DATA_PROXIMITY: 'proximity-data' };
+module.exports = { SENSOR_DATA_PROXIMITY: 'proximity-data' }
