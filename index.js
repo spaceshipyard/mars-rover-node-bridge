@@ -5,16 +5,34 @@ const port = process.env.port || '8080'
 const serialPort = process.env.serialPort || undefined
 const targetRoom = process.env.room || 'lobby'
 
+var argv = require('optimist')
+  .default('device', 'arduino')
+  .argv
+
 console.log({ host })
 
-// config arduino
-const arduinoControlModules = [
-  require('./arduino/control-modules/direction'),
-  // require('./arduino/control-modules/stepper-platform'),
-  require('./arduino/control-modules/camera'),
-  require('./arduino/control-modules/proximity')]
-const { configureArduinoChannel } = require('./arduino/arduino-bridge')
-const sendCmdToArduino = configureArduinoChannel(arduinoControlModules, serialPort)
+let sendCmd = () => {}
+if (argv.device === 'arduino') {
+  // config arduino
+  const arduinoControlModules = [
+    require('./arduino/control-modules/direction'),
+    // require('./arduino/control-modules/stepper-platform'),
+    require('./arduino/control-modules/camera'),
+    require('./arduino/control-modules/proximity')]
+  const { configureArduinoChannel } = require('./arduino/arduino-bridge')
+  sendCmd = configureArduinoChannel(arduinoControlModules, serialPort)
+} if (argv.device === 'mock') {
+  // config mock
+  const mockControlModules = [
+    require('./mock/control-modules/proximity'),
+    require('./mock/control-modules/direction'),
+    require('./mock/control-modules/camera')
+  ]
+  const { configureMockChannel } = require('./mock/mock-bridge')
+  sendCmd = configureMockChannel(mockControlModules, serialPort)
+} else {
+  console.error('no valid device specified (mock/arduino)')
+}
 
 // config dispatcher
 const configureDispatherSocket = require('./dispather/socket-client')
@@ -24,5 +42,5 @@ const sendMsgToDispatcher = configureDispatherSocket({ host, port, targetRoom })
 const eventBus = require('./events/event-bus')
 const { EVENT_DISPATCHER_CMD, EVENT_SENSOR_DATA } = require('./events/event-keys')
 
-eventBus.on(EVENT_DISPATCHER_CMD, sendCmdToArduino)
+eventBus.on(EVENT_DISPATCHER_CMD, sendCmd)
 eventBus.on(EVENT_SENSOR_DATA, (event) => sendMsgToDispatcher(EVENT_SENSOR_DATA, event))
