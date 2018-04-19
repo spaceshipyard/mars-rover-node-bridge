@@ -5,6 +5,7 @@ const _ = require('lodash')
 let moduleDisposeHandlers = []
 const cmdEventEmitter = new EventEmitter()
 const registerCmd = (key, handler) => {
+  console.log('registerCmd', key)
   if (cmdEventEmitter.listenerCount(key) > 0) {
     console.warn(`${key} already registered.`)
   }
