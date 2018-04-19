@@ -1,6 +1,6 @@
 const { SENSOR_DATA_PROXIMITY } = require('../sensor-keys')
 const { EVENT_SENSOR_DATA } = require('../../events/event-keys')
-const { PIN_PROXIMITY_1, PIN_PROXIMITY_2 } = require('../cmd-pins')
+const { PIN_PROXIMITY_1, PIN_PROXIMITY_2, PIN_PROXIMITY_3, PIN_PROXIMITY_4 } = require('../cmd-pins')
 const eventBus = require('../../events/event-bus')
 
 let intervalId
@@ -25,6 +25,20 @@ function setup ({ five }, registerCmd) {
       proximity: new Proximity({
         controller: 'HCSR04',
         pin: PIN_PROXIMITY_2
+      })
+    },
+    {
+      name: 'back-left',
+      proximity: new Proximity({
+        controller: 'HCSR04',
+        pin: PIN_PROXIMITY_3
+      })
+    },
+    {
+      name: 'back-right',
+      proximity: new Proximity({
+        controller: 'HCSR04',
+        pin: PIN_PROXIMITY_4
       })
     }
 
