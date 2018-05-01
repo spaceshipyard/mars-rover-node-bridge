@@ -1,6 +1,8 @@
 const EventEmitter = require('events')
 const five = require('johnny-five')
 const _ = require('lodash')
+const eventBus = require('../events/event-bus')
+const { EVENT_ARDUINO_CONNECTED } = require('../events/event-keys')
 
 let moduleDisposeHandlers = []
 const cmdEventEmitter = new EventEmitter()
@@ -22,10 +24,16 @@ function configureArduinoChannel (controlModules, serialPort = undefined) {
   board.on('ready', function () {
     isOpen = true
     console.log('arduino connected')
+    eventBus.emit(EVENT_ARDUINO_CONNECTED, true)
     cmdEventEmitter.removeAllListeners()
     // note dispose could be undefined because most of modules does not have allocated resources in the reality
     moduleDisposeHandlers.forEach(dispose => dispose && dispose())
     moduleDisposeHandlers = controlModules.map(m => m.setup({ five, board }, registerCmd))
+  })
+
+  board.on('error', function (event) {
+    eventBus.emit(EVENT_ARDUINO_CONNECTED, false)
+    console.log(`%s sent a 'error' message: %s`, event.class, event.message)
   })
 
   function sendCmdToArduino (event) {

@@ -10,3 +10,15 @@ How to start
 1. define env variable `host` (by default `http://localhost:80`) it is an url or your [dispatcher](https://github.com/spaceshipyard/mars-rover-dispatcher)
 1. define `serialPort` by default it will try to autodetect arduino
 1. run `npm start`
+
+How to Enable Status Indication(raspberry only)
+it is required to set env variable.
+
+on linux
+`export statusHandlers=led/led-status-handlers`
+
+on windows (power shell):
+`$env:statusHandlers="statusHandlers=led/led-status-handlers"`
+
+by default it has value:
+`statusHandlers="console-status-handlers"`

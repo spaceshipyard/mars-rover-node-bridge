@@ -12,11 +12,13 @@
     "lodash": "^4.17.4",
     "nodebots-interchange": "^1.1.6",
     "nodemon": "^1.12.1",
+    "onoff": "^3.0.2",
     "serialport": "^4.0.7",
     "socket.io": "^2.0.1",
     "socket.io-client": "^2.0.1"
   },
   "devDependencies": {
+    "cross-env": "^5.1.4",
     "mocha": "^4.0.1",
     "sinon": "^4.0.1",
     "standard": "^11.0.1"
