@@ -12,6 +12,7 @@
     "lodash": "^4.17.4",
     "nodebots-interchange": "^1.1.6",
     "nodemon": "^1.12.1",
+    "optimist": "^0.6.1",
     "serialport": "^4.0.7",
     "socket.io": "^2.0.1",
     "socket.io-client": "^2.0.1"
@@ -25,6 +26,7 @@
     "test": "standard && mocha",
     "test:watch": "standard && mocha -w",
     "start": "standard && node index.js",
+    "start:mock": "standard && npm start -- --device mock",
     "start:watch": "nodemon --watch *.js --exec npm run start"
   },
   "author": "",
