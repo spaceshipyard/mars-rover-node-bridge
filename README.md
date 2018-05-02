@@ -12,7 +12,8 @@ How to start
 1. run `npm start`
 
 How to Enable Status Indication(raspberry only)
-it is required to set env variable.
+it is required to set env variable. GPIO 3, and 4 are used.
+Don't forget to assembly them with resistors.
 
 on linux
 `export statusHandlers=led/led-status-handlers`
