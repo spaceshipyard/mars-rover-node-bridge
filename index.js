@@ -4,8 +4,14 @@ const host = process.env.host || '127.0.0.1'
 const port = process.env.port || '8080'
 const serialPort = process.env.serialPort || undefined
 const targetRoom = process.env.room || 'lobby'
+const statusHandlers = process.env.statusHandlers || 'console-status-handlers'
 
-console.log({ host })
+console.log({ host, statusHandlers })
+
+// config status panel
+const statusModuleSetup = require('./status/status-module')
+const consoleStatusHandlers = require(`./status/${statusHandlers}.js`)
+statusModuleSetup(consoleStatusHandlers)
 
 // config arduino
 const arduinoControlModules = [

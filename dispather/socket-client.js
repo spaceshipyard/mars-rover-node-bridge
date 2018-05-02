@@ -1,7 +1,10 @@
-const {EVENT_DISPATCHER_CMD} = require('../events/event-keys')
+const { EVENT_DISPATCHER_CMD, EVENT_DISPATCHER_CONNECTED } = require('../events/event-keys')
 const EventBus = require('../events/event-bus')
 const io = require('socket.io-client')
 const bluebird = require('bluebird')
+
+const notifyDisconnect = () => EventBus.emit(EVENT_DISPATCHER_CONNECTED, false)
+const notifyConnect = () => EventBus.emit(EVENT_DISPATCHER_CONNECTED, true)
 
 function configureSocket ({host, port, targetRoom}) {
   const socket = io.connect(`http://${host}:${port}`, {rejectUnauthorized: false})
@@ -23,6 +26,7 @@ function configureSocket ({host, port, targetRoom}) {
 
   socket.on('connect', function () {
     console.log('connect')
+    notifyConnect()
   })
 
   socket.on('event', function (data) {
@@ -31,18 +35,22 @@ function configureSocket ({host, port, targetRoom}) {
 
   socket.on('disconnect', function () {
     console.log('disconnect')
+    notifyDisconnect()
   })
 
   socket.on('reconnecting', function () {
     console.log('reconnecting')
+    notifyDisconnect()
   })
 
   socket.on('reconnect_error', function (error) {
     console.log('reconnect_error ' + JSON.stringify(error))
+    notifyDisconnect()
   })
 
   socket.on('reconnect_failed', function () {
     console.log('reconnect_failed')
+    notifyDisconnect()
   })
 
   socket.on('welcome', ({currRooms}) => {
