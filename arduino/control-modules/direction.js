@@ -1,5 +1,5 @@
 const { PIN_LEFT_DIR, PIN_LEFT_SPEED, PIN_RIGHT_DIR, PIN_RIGHT_SPEED } = require('../cmd-pins')
-const { EVENT_SENSOR_DATA } = require('../../events/event-keys')
+const { EVENT_SENSOR_DATA, EVENT_DISPATCHER_CONNECTED } = require('../../events/event-keys')
 const eventBus = require('../../events/event-bus')
 
 const MIN_DISTANCE_FOR_COLLISION = 15
@@ -86,6 +86,13 @@ function setup ({ five }, registerCmd) {
     currentSpeed = speed
   }
 
+  function onDispatcherConnection (connected) {
+    if (!connected) {
+      console.warn('dispatcher disconnected, stop moving')
+      flushMotorMoving(0)
+    }
+  }
+
   function onDirectionCmd ({ offset: { x: leftSpeed, y: rightSpeed } }) {
     console.log('offset', leftSpeed, rightSpeed)
 
@@ -102,9 +109,11 @@ function setup ({ five }, registerCmd) {
   const keys = require('../cmd-keys')
   registerCmd(keys.CMD_KEY_DIRECTION, onDirectionCmd)
   eventBus.on(EVENT_SENSOR_DATA, onSensorData)
+  eventBus.on(EVENT_DISPATCHER_CONNECTED, onDispatcherConnection)
 
   return () => {
     eventBus.off(EVENT_SENSOR_DATA, onSensorData)
+    eventBus.off(EVENT_DISPATCHER_CONNECTED, onDispatcherConnection)
   }
 }
 
