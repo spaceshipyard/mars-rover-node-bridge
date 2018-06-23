@@ -6,8 +6,8 @@ const bluebird = require('bluebird')
 const notifyDisconnect = () => EventBus.emit(EVENT_DISPATCHER_CONNECTED, false)
 const notifyConnect = () => EventBus.emit(EVENT_DISPATCHER_CONNECTED, true)
 
-function configureSocket ({protocol = 'https', host, port, targetRoom}) {
-  const socket = io.connect(`${protocol}://${host}:${port}`, {rejectUnauthorized: false})
+function configureSocket ({dispatcherUrl, targetRoom}) {
+  const socket = io.connect(dispatcherUrl, {rejectUnauthorized: false})
 
   socket.on('message', bluebird.coroutine(function * (msg) {
     console.log('inMsg', msg)
