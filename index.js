@@ -1,5 +1,6 @@
 'use strict'
 
+const protocol = process.env.protocol || 'https'
 const host = process.env.host || '127.0.0.1'
 const port = process.env.port || '8080'
 const serialPort = process.env.serialPort || undefined
@@ -24,7 +25,7 @@ const sendCmdToArduino = configureArduinoChannel(arduinoControlModules, serialPo
 
 // config dispatcher
 const configureDispatherSocket = require('./dispather/socket-client')
-const sendMsgToDispatcher = configureDispatherSocket({ host, port, targetRoom })
+const sendMsgToDispatcher = configureDispatherSocket({ protocol, host, port, targetRoom })
 
 // config event-bus
 const eventBus = require('./events/event-bus')
