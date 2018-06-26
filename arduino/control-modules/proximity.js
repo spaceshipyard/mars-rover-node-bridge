@@ -1,12 +1,17 @@
-const { SENSOR_DATA_PROXIMITY } = require('../sensor-keys')
-const { EVENT_SENSOR_DATA } = require('../../events/event-keys')
-const { PIN_PROXIMITY_1, PIN_PROXIMITY_2, PIN_PROXIMITY_3, PIN_PROXIMITY_4 } = require('../cmd-pins')
+const {SENSOR_DATA_PROXIMITY} = require('../sensor-keys')
+const {EVENT_SENSOR_DATA} = require('../../events/event-keys')
+const {PIN_PROXIMITY_1, PIN_PROXIMITY_2, PIN_PROXIMITY_3, PIN_PROXIMITY_4} = require('../cmd-pins')
 const eventBus = require('../../events/event-bus')
 
 let intervalId
 const INTERVAL_DURATION = 300
 
-function setup ({ five }, registerCmd) {
+function setup ({five}, registerCmd) {
+  if (process.env.disableProximity === 'true') {
+    console.warn('proximity sensors are disabled')
+    return
+  }
+
   intervalId && clearInterval(intervalId)
 
   const Proximity = five.Proximity
@@ -45,15 +50,15 @@ function setup ({ five }, registerCmd) {
   ]
 
   sensors.map((item) => {
-    const { proximity } = item
+    const {proximity} = item
     proximity.on('data', function () {
       item.distance = this.cm
     })
   })
 
   const updateSensorData = () => {
-    const data = sensors.map(({ name, distance }) => ({ name, distance }))
-    eventBus.emit(EVENT_SENSOR_DATA, { type: SENSOR_DATA_PROXIMITY, data })
+    const data = sensors.map(({name, distance}) => ({name, distance}))
+    eventBus.emit(EVENT_SENSOR_DATA, {type: SENSOR_DATA_PROXIMITY, data})
   }
 
   intervalId = setInterval(updateSensorData, INTERVAL_DURATION)
@@ -65,4 +70,4 @@ function setup ({ five }, registerCmd) {
   }
 }
 
-module.exports = { setup }
+module.exports = {setup}
