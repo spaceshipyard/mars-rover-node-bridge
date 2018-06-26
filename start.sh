@@ -21,7 +21,7 @@ export room=${roverNodeBridgeRoom:="lobby"}
 export export statusHandlers="led/led-status-handlers"
 pidFile="run.pid"
 
-function install {
+function install() {
     if git diff-index --quiet HEAD --; then
         # No changes
         echo "git verification has been passed, no local changes"
@@ -35,15 +35,17 @@ function install {
     npm i
 }
 
-function run {
+function run() {
     cd ${basedir}
-    nohup npm run start:watch > run.log 2>&1 &
+    nohup npm run start >> run.log 2>&1 &
     echo $! > ${pidFile}
 }
 
-function stop {
+function stop() {
     if [ -f ${pidFile} ]; then
-        kill -KILL `cat ${pidFile}`
+	targetPID=`cat ${pidFile}`
+	targetProcessGroup=`ps -o pgid= ${targetPID} | grep -o '[0-9]*'`
+        kill -KILL -${targetProcessGroup}
         rm ${pidFile}
     else
         echo "process has not been terminated, no process id file ${pidFile}"
