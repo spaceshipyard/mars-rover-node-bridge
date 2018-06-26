@@ -1,6 +1,6 @@
 'use strict'
 
-const dispatcherUrl = process.env.dispatcherUrl || 'https://localhost:8080'
+const dispatcherUrl = process.env.dispatcherUrl || 'https://localhost'
 const serialPort = process.env.serialPort || undefined
 const targetRoom = process.env.room || 'lobby'
 const statusHandlers = process.env.statusHandlers || 'console-status-handlers'
