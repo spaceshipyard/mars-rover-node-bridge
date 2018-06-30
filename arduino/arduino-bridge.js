@@ -40,18 +40,19 @@ function configureArduinoChannel (controlModules, serialPort = undefined) {
     console.log(`arduino cmd ${JSON.stringify(event)}`)
     const { cmd, params } = event
     try {
-      if (!isOpen) {
-        console.warn('attempt to flush state to unprepared arduino connection')
-        throw (new Error('attempt to flush state to unprepared arduino connection'))
-      }
-
       if (!cmd) {
         console.error(`"${cmd}" cmd is not defined to be flushed to the arduino`)
         throw (new Error(`"${cmd}" is not defined to be flushed to the arduino`))
       }
 
       if (!cmdEventEmitter.listenerCount(cmd)) {
-        throw new Error(`Unknown cmd '${cmd}'`, 'UnknownCMD')
+        console.warn(`Unknown cmd '${cmd}'`, 'UnknownCMD')
+        return
+      }
+
+      if (!isOpen) {
+        console.warn('attempt to flush state to unprepared arduino connection')
+        throw (new Error('attempt to flush state to unprepared arduino connection'))
       }
 
       cmdEventEmitter.emit(cmd, params)
