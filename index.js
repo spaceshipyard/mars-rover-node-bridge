@@ -15,7 +15,7 @@ statusModuleSetup(consoleStatusHandlers)
 // config arduino
 const arduinoControlModules = [
   require('./arduino/control-modules/direction'),
-  // require('./arduino/control-modules/stepper-platform'),
+  require('./arduino/control-modules/motor-encoder-sensors'),
   require('./arduino/control-modules/camera'),
   require('./arduino/control-modules/proximity')]
 const { configureArduinoChannel } = require('./arduino/arduino-bridge')
