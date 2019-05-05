@@ -17,7 +17,9 @@ const arduinoControlModules = [
   require('./arduino/control-modules/direction'),
   require('./arduino/control-modules/motor-encoder-sensors'),
   require('./arduino/control-modules/camera'),
-  require('./arduino/control-modules/proximity')]
+  require('./arduino/control-modules/proximity'),
+  require('./arduino/control-modules/i2c-reader')
+]
 const { configureArduinoChannel } = require('./arduino/arduino-bridge')
 const sendCmdToArduino = configureArduinoChannel(arduinoControlModules, serialPort)
 
