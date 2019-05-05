@@ -47,7 +47,7 @@ describe('arduino-bridge', () => {
     swithBoardToReadyState()
 
     // when
-    sendCmd({cmd: cmdKey, params: cmdParams})
+    sendCmd({ cmd: cmdKey, params: cmdParams })
 
     // then
     assert(cmdHandler.calledOnce)

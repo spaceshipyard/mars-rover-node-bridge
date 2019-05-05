@@ -1,5 +1,5 @@
 const assert = require('assert')
-const {setup} = require('../arduino/control-modules/proximity')
+const { setup } = require('../arduino/control-modules/proximity')
 
 /* global describe it before after */
 

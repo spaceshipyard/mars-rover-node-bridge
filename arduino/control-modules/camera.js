@@ -1,6 +1,6 @@
 const { PIN_CAMERA_SERVO_1, PIN_CAMERA_SERVO_2 } = require('../cmd-pins')
 const speed = 500
-let previousOffset = {x: 0, y: 0}
+let previousOffset = { x: 0, y: 0 }
 function setup ({ five }, registerCmd) {
   const cameraServos = new five.Servos([PIN_CAMERA_SERVO_1, PIN_CAMERA_SERVO_2])
 

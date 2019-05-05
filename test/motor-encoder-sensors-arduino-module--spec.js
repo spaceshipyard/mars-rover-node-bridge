@@ -1,18 +1,18 @@
 const assert = require('assert')
 const sinon = require('sinon')
 const eventBus = require('../events/event-bus')
-const {setup, UPDATE_INTERVAL_DURATION} = require('../arduino/control-modules/motor-encoder-sensors')
+const { setup, UPDATE_INTERVAL_DURATION } = require('../arduino/control-modules/motor-encoder-sensors')
 
-const {SENSOR_DATA_MOTOR_ENCODER} = require('../arduino/sensor-keys')
-const {PIN_MOTOR_LEFT_ENCODER_SENSOR, PIN_MOTOR_RIGHT_ENCODER_SENSOR} = require('../arduino/cmd-pins')
-const {EVENT_SENSOR_DATA} = require('../events/event-keys')
+const { SENSOR_DATA_MOTOR_ENCODER } = require('../arduino/sensor-keys')
+const { PIN_MOTOR_LEFT_ENCODER_SENSOR, PIN_MOTOR_RIGHT_ENCODER_SENSOR } = require('../arduino/cmd-pins')
+const { EVENT_SENSOR_DATA } = require('../events/event-keys')
 
 /* global describe it before after */
 
 describe('motor encoder sensors arduino module', function () {
   let dispose
-  let motorLeftSensor = {raw: undefined}
-  let motorRightSensor = {raw: undefined}
+  let motorLeftSensor = { raw: undefined }
+  let motorRightSensor = { raw: undefined }
   let eventBusEmitFake
   let clock
 
@@ -24,7 +24,7 @@ describe('motor encoder sensors arduino module', function () {
 
     dispose = setup({
       five: {
-        Sensor: function ({pin}) {
+        Sensor: function ({ pin }) {
           switch (pin) {
             case PIN_MOTOR_LEFT_ENCODER_SENSOR:
               return motorLeftSensor
@@ -51,8 +51,8 @@ describe('motor encoder sensors arduino module', function () {
     const expectedMessage = {
       type: SENSOR_DATA_MOTOR_ENCODER,
       data: [
-        {name: 'left', value: leftSensorData},
-        {name: 'right', value: rightSensorData}
+        { name: 'left', value: leftSensorData },
+        { name: 'right', value: rightSensorData }
       ]
     }
     // when
@@ -61,7 +61,7 @@ describe('motor encoder sensors arduino module', function () {
     clock.tick(UPDATE_INTERVAL_DURATION)
 
     // then
-    assert.equal(eventBusEmitFake.lastCall.args[0], EVENT_SENSOR_DATA)
+    assert.strictEqual(eventBusEmitFake.lastCall.args[0], EVENT_SENSOR_DATA)
     assert.deepStrictEqual(eventBusEmitFake.lastCall.lastArg, expectedMessage)
   })
 })
