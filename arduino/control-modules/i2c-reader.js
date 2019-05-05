@@ -15,7 +15,7 @@ function handlChannel (five, channelNumber) {
       }
     }
     if (message.length !== 1) {
-      console.log('i2c message recieved', message.length, message)
+      console.log('i2c message recieved', channelNumber, message)
       eventBus.emit(I2C_DATA_RECIEVED, { type: I2C_DATA, message })
     }
   })
