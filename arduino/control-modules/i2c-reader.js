@@ -2,7 +2,7 @@ const eventBus = require('../../events/event-bus')
 const { I2C_DATA } = require('../sensor-keys')
 const { I2C_DATA_RECIEVED } = require('../../events/event-keys')
 
-function handlChannel (board, channelNumber) {
+function handleChannel (board, channelNumber) {
   board.io.i2cRead(channelNumber, 27, function (arrayOfBytes) {
     const length = arrayOfBytes.length
     let message = ''
@@ -24,8 +24,10 @@ function handlChannel (board, channelNumber) {
 }
 function setup ({ board }, registerCmd) {
   board.io.i2cConfig()
-  handlChannel(board, 1)
-  handlChannel(board, 2)
+  setTimeout(() => {
+    handleChannel(board, 1)
+    handleChannel(board, 2)
+  }, 1000)
   console.log('i2c reader set up -', I2C_DATA_RECIEVED)
 }
 
