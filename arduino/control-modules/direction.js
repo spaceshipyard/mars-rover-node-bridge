@@ -115,6 +115,7 @@ function setup ({ five }, registerCmd) {
     eventBus.off(EVENT_SENSOR_DATA, onSensorData)
     eventBus.off(EVENT_DISPATCHER_CONNECTED, onDispatcherConnection)
   }
+  
 }
 
 module.exports = { setup }

@@ -26,6 +26,7 @@ function setup ({ board }, registerCmd) {
   board.io.i2cConfig()
   handlChannel(board, 1)
   handlChannel(board, 2)
+  console.log('i2c reader set up -', I2C_DATA_RECIEVED)
 }
 
 module.exports = { setup }

@@ -14,7 +14,7 @@ function setup ({ five }, registerCmd) {
   }
 
   const keys = require('../cmd-keys')
-  console.log('camera inited', keys.CMD_KEY_CAMERA)
+  console.log('camera set up -', keys.CMD_KEY_CAMERA)
   registerCmd(keys.CMD_KEY_CAMERA, onCamera)
 }
 
