@@ -2,14 +2,16 @@ const eventBus = require('../../events/event-bus')
 const { I2C_DATA } = require('../sensor-keys')
 const { I2C_DATA_RECIEVED } = require('../../events/event-keys')
 
-function handlChannel (five, channelNumber) {
-  five.io.i2cRead(channelNumber, 27, function (ArrayOfBytes) {
-    var length = ArrayOfBytes.length
-    var message = ''
+function handlChannel (board, channelNumber) {
+  board.io.i2cRead(channelNumber, 27, function (arrayOfBytes) {
+    const length = arrayOfBytes.length
+    let message = ''
 
-    for (var i = 0; i < length; i++) {
-      var code = ArrayOfBytes[i]
-      var char = String.fromCharCode(code)
+    console.log('arrayOfBytes', arrayOfBytes)
+
+    for (let i = 0; i < length; i++) {
+      const code = arrayOfBytes[i]
+      const char = String.fromCharCode(code)
       if (code !== 255) {
         message = message.concat(char)
       }
@@ -20,9 +22,10 @@ function handlChannel (five, channelNumber) {
     }
   })
 }
-function setup ({ five }, registerCmd) {
-  handlChannel(five, 1)
-  handlChannel(five, 2)
+function setup ({ board }, registerCmd) {
+  board.io.i2cConfig()
+  handlChannel(board, 1)
+  handlChannel(board, 2)
 }
 
 module.exports = { setup }
