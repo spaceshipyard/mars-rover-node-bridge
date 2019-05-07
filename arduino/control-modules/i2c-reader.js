@@ -23,7 +23,7 @@ function handleChannel (board, channelNumber) {
   })
 }
 function setup ({ board }, registerCmd) {
-  board.io.i2cConfig()
+  board.io.i2cConfig(1000)
   handleChannel(board, 0x01)
   console.log('i2c reader set up -', I2C_DATA_RECIEVED)
 }
