@@ -4,21 +4,21 @@ const { I2C_DATA_RECIEVED } = require('../../events/event-keys')
 
 function handleChannel (board, channelNumber) {
   board.io.i2cRead(channelNumber, 27, function (arrayOfBytes) {
-    const length = arrayOfBytes.length
     let message = ''
+    let rawMessage = arrayOfBytes.filter(el => el !== 255)
 
-    console.log('arrayOfBytes', arrayOfBytes)
-
-    for (let i = 0; i < length; i++) {
-      const code = arrayOfBytes[i]
-      const char = String.fromCharCode(code)
-      if (code !== 255) {
-        message = message.concat(char)
-      }
+    if (rawMessage.length) {
+      rawMessage.forEach(code => {
+        const char = String.fromCharCode(code)
+        if (code !== 255) {
+          message = message.concat(char)
+        }
+      })
     }
-    if (message.length !== 1) {
-      console.log('i2c message recieved', channelNumber, message)
-      eventBus.emit(I2C_DATA_RECIEVED, { type: I2C_DATA, message })
+
+    if (message.length > 0) {
+      console.log(`i2c message recieved channel=${channelNumber}`, rawMessage, message)
+      eventBus.emit(I2C_DATA_RECIEVED, { type: I2C_DATA, message, rawMessage })
     }
   })
 }
