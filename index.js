@@ -19,7 +19,7 @@ const arduinoControlModules = [
   require('./arduino/control-modules/proximity'),
   require('./arduino/control-modules/i2c-reader')
 ]
-const { configureArduinoChannel } = require('./arduino/ardnpuino-bridge')
+const { configureArduinoChannel } = require('./arduino/arduino-bridge')
 const sendCmdToArduino = configureArduinoChannel(arduinoControlModules, serialPort)
 
 // config dispatcher
@@ -28,7 +28,8 @@ const sendMsgToDispatcher = configureDispatherSocket({ dispatcherUrl, targetRoom
 
 // config event-bus
 const eventBus = require('./events/event-bus')
-const { EVENT_DISPATCHER_CMD, EVENT_SENSOR_DATA } = require('./events/event-keys')
+const { EVENT_DISPATCHER_CMD, EVENT_SENSOR_DATA, I2C_DATA_RECIEVED } = require('./events/event-keys')
 
 eventBus.on(EVENT_DISPATCHER_CMD, sendCmdToArduino)
 eventBus.on(EVENT_SENSOR_DATA, (event) => sendMsgToDispatcher(EVENT_SENSOR_DATA, event))
+eventBus.on(I2C_DATA_RECIEVED, (event) => sendMsgToDispatcher(I2C_DATA_RECIEVED, event))
