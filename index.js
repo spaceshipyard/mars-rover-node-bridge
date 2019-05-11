@@ -19,7 +19,7 @@ const arduinoControlModules = [
   require('./arduino/control-modules/proximity'),
   require('./arduino/control-modules/i2c-reader')
 ]
-const { configureArduinoChannel } = require('./arduino/arduino-bridge')
+const { configureArduinoChannel } = require('./arduino/ardnpuino-bridge')
 const sendCmdToArduino = configureArduinoChannel(arduinoControlModules, serialPort)
 
 // config dispatcher
