@@ -1,6 +1,6 @@
-const {PIN_STEPPER1} = require('../cmd-pins')
+const { PIN_STEPPER1 } = require('../cmd-pins')
 
-function setup ({five}, registerCmd) {
+function setup ({ five }, registerCmd) {
   const Stepper = five.Stepper
   const stepper = new Stepper({
     type: Stepper.TYPE.FOUR_WIRE,
@@ -13,7 +13,7 @@ function setup ({five}, registerCmd) {
     }
   })
 
-  function onPlatform ({offset}) {
+  function onPlatform ({ offset }) {
     const { x } = offset
     stepper.rpm(Math.abs(x)).direction(x > 0 ? Stepper.DIRECTION.CW : Stepper.DIRECTION.CCW).accel(1600).decel(1600).step(100, function () {
       console.log('done moving', x, x > 0, x > 0 ? Stepper.DIRECTION.CW : Stepper.DIRECTION.CCW)
@@ -24,4 +24,4 @@ function setup ({five}, registerCmd) {
   registerCmd(keys.CMD_KEY_STEPPER_PLATFORM, onPlatform)
 }
 
-module.exports = {setup}
+module.exports = { setup }

@@ -1,6 +1,6 @@
 const { PIN_CAMERA_SERVO_1, PIN_CAMERA_SERVO_2 } = require('../cmd-pins')
 const speed = 500
-let previousOffset = {x: 0, y: 0}
+let previousOffset = { x: 0, y: 0 }
 function setup ({ five }, registerCmd) {
   const cameraServos = new five.Servos([PIN_CAMERA_SERVO_1, PIN_CAMERA_SERVO_2])
 
@@ -14,7 +14,7 @@ function setup ({ five }, registerCmd) {
   }
 
   const keys = require('../cmd-keys')
-  console.log('camera inited', keys.CMD_KEY_CAMERA)
+  console.log('camera set up -', keys.CMD_KEY_CAMERA)
   registerCmd(keys.CMD_KEY_CAMERA, onCamera)
 }
 
