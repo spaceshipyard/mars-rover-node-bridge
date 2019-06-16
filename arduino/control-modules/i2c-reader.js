@@ -21,7 +21,7 @@ function handleChannel (board, channelNumber) {
 
       if (message.length > 0) {
         console.log(`i2c message recieved channel=${channelNumber} raw=${rawMessage.join(',')} string="${message}"`)
-        eventBus.emit(I2C_DATA_RECIEVED, { type: I2C_DATA, message, rawMessage })
+        eventBus.emit(I2C_DATA_RECIEVED, { type: I2C_DATA, message, rawMessage, channelNumber })
       }
     })
   }, READ_DELAY)
@@ -29,6 +29,7 @@ function handleChannel (board, channelNumber) {
 function setup ({ board }, registerCmd) {
   board.io.i2cConfig()
   handleChannel(board, 0x01)
+  handleChannel(board, 0x02)
   console.log('i2c reader set up -', I2C_DATA_RECIEVED)
 }
 
