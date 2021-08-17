@@ -16,7 +16,7 @@ set -x
 ABSOLUTE_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
 echo $ABSOLUTE_PATH
 export basedir=`dirname $ABSOLUTE_PATH`
-export dispatcherUrl=${roverDispatcherUrl:="https://mars-rover.org"}
+export dispatcherUrl=${roverDispatcherUrl:="https://vnabatov-mars-rover-dispatcher-glitch-me.glitch.me/"}
 export room=${roverNodeBridgeRoom:="lobby"}
 export export statusHandlers="led/led-status-handlers"
 pidFile="run.pid"
