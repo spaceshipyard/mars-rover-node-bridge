@@ -7,25 +7,25 @@
     "bluebird": "^3.5.0",
     "color-name": "^1.1.3",
     "ease-component": "^1.0.0",
-    "firmata": "^0.19.1",
-    "johnny-five": "^1.0.0",
+    "firmata": "^2.3.0",
+    "johnny-five": "^2.1.0",
     "lodash": "^4.17.11",
-    "nodebots-interchange": "^1.3.0",
-    "nodemon": "^1.18.10",
-    "onoff": "^3.0.2",
+    "nodebots-interchange": "^2.1.3",
+    "nodemon": "^2.0.12",
+    "onoff": "^6.0.3",
     "socket.io": "^2.0.1",
     "socket.io-client": "^2.0.1"
   },
   "devDependencies": {
     "cross-env": "^5.1.4",
-    "mocha": "^4.0.1",
+    "mocha": "^9.0.3",
     "sinon": "^7.3.1",
     "standard": "^11.0.1"
   },
   "scripts": {
     "test": "standard && mocha",
     "test:watch": "standard && mocha -w",
-    "start": "standard --fix && node index.js",
+    "start": "node index.js",
     "start:watch": "nodemon --watch *.js --exec npm run start"
   },
   "author": "",
