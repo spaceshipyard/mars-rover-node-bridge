@@ -13,8 +13,8 @@
     "nodebots-interchange": "^1.3.0",
     "nodemon": "^1.18.10",
     "onoff": "^3.0.2",
-    "socket.io": "^2.0.1",
-    "socket.io-client": "^2.0.1"
+    "socket.io": "^2.5.0",
+    "socket.io-client": "^2.5.0"
   },
   "devDependencies": {
     "cross-env": "^5.1.4",
